@@ -1,6 +1,5 @@
 #include <Windows.h>
-#include <qapplication.h>
-#include <qpushbutton.h>
+#include <QApplication>
 #include "main_window.h"
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow)
