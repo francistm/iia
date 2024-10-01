@@ -21,12 +21,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	QPushButton *loadFromClipboardBtn = new QPushButton("Clipboard");
 	QPushButton *loadFromFileBtn = new QPushButton("File");
+	QPushButton *useRegexpBtn = new QPushButton("RE Mode");
 
 	loadFromClipboardBtn->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 	loadFromFileBtn->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+	useRegexpBtn->setCheckable(true);
+	useRegexpBtn->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
 	topButtonLayout->addWidget(loadFromClipboardBtn);
 	topButtonLayout->addWidget(loadFromFileBtn);
+	topButtonLayout->addWidget(useRegexpBtn);
 	topButtonLayout->setAlignment(Qt::AlignLeft);
 
 	DataTable *dataTable = new DataTable();
@@ -42,6 +46,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		QString value = clipboard->text();
 
 		converter->loadStdString(value.toStdString());
+	});
+
+	QObject::connect(useRegexpBtn, &QPushButton::clicked, [dataTable](bool selected) {
+		dataTable->setFilterMatchMode(selected ? FilterMatchMode::RE : FilterMatchMode::STD);
 	});
 
 	QObject::connect(converter, &JsonConverter::loaded, [dataTable](std::vector<KeyValue *> data) {

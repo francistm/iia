@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QTableView>
 #include <QHeaderView>
+#include <QRegularExpression>
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
 #include "data_table.h"
@@ -14,38 +15,45 @@ DataTable::DataTable(QWidget *parent) : QWidget(parent)
 	QVBoxLayout *widgetLayout = new QVBoxLayout();
 	QHBoxLayout *filterLayout = new QHBoxLayout();
 
-	// QTableView model & filter
 	model.setColumnCount(2);
+	filterMatchMode = FilterMatchMode::STD;
 
-	QLineEdit *propFilter = new QLineEdit();
-	QLineEdit *valueFilter = new QLineEdit();
+	propFilter.setPlaceholderText("Search field name");
+	valueFilter.setPlaceholderText("Search field value");
 
-	propFilter->setPlaceholderText("Search field name");
-	valueFilter->setPlaceholderText("Search field value");
+	filterLayout->addWidget(&propFilter);
+	filterLayout->addWidget(&valueFilter);
 
-	filterLayout->addWidget(propFilter);
-	filterLayout->addWidget(valueFilter);
+	propFilterModel.setSourceModel(&model);
+	propFilterModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
 
-	QSortFilterProxyModel *propFilterModel = new QSortFilterProxyModel();
-	propFilterModel->setSourceModel(&model);
-	propFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+	valueFilterModel.setSourceModel(&propFilterModel);
+	valueFilterModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
 
-	QSortFilterProxyModel *valueFilterModel = new QSortFilterProxyModel();
-	valueFilterModel->setSourceModel(propFilterModel);
-	valueFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+	QObject::connect(&propFilter, &QLineEdit::textChanged, [&](const QString &text) {
+		propFilterModel.setFilterKeyColumn(0);
 
-	QObject::connect(propFilter, &QLineEdit::textChanged, [propFilterModel](const QString &text) {
-		propFilterModel->setFilterKeyColumn(0);
-		propFilterModel->setFilterFixedString(text);
+		if (filterMatchMode == FilterMatchMode::STD) {
+			propFilterModel.setFilterFixedString(text);
+		} else {
+			QRegularExpression re(text);
+			if (re.isValid()) propFilterModel.setFilterRegularExpression(re);
+		}
 	});
 
-	QObject::connect(valueFilter, &QLineEdit::textChanged, [valueFilterModel](const QString &text) {
-		valueFilterModel->setFilterKeyColumn(1);
-		valueFilterModel->setFilterFixedString(text);
+	QObject::connect(&valueFilter, &QLineEdit::textChanged, [&](const QString &text) {
+		valueFilterModel.setFilterKeyColumn(1);
+
+		if (filterMatchMode == FilterMatchMode::STD) {
+			valueFilterModel.setFilterFixedString(text);
+		} else {
+			QRegularExpression re(text);
+			if (re.isValid()) valueFilterModel.setFilterRegularExpression(re);
+		}
 	});
 
 	QTableView *tableView = new QTableView();
-	tableView->setModel(valueFilterModel);
+	tableView->setModel(&valueFilterModel);
 	tableView->setSortingEnabled(false);
 	tableView->verticalHeader()->setVisible(true);
 	tableView->horizontalHeader()->setVisible(false);
@@ -76,4 +84,23 @@ void DataTable::reloadData(std::vector<KeyValue *> data)
 
 		delete keyValue;
 	}
+}
+
+void DataTable::setFilterMatchMode(FilterMatchMode mode)
+{
+	QString field = propFilter.text();
+	QString value = valueFilter.text();
+
+	if (mode == FilterMatchMode::STD) {
+		propFilterModel.setFilterFixedString(field);
+		valueFilterModel.setFilterFixedString(value);
+	} else {
+		QRegularExpression fieldRe(field);
+		QRegularExpression valueRe(value);
+
+		if (fieldRe.isValid()) propFilterModel.setFilterRegularExpression(fieldRe);
+		if (valueRe.isValid()) valueFilterModel.setFilterRegularExpression(valueRe);
+	}
+
+	filterMatchMode = mode;
 }
