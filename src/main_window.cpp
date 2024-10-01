@@ -1,3 +1,4 @@
+#include <array>
 #include <QWidget>
 #include <QBoxLayout>
 #include <QPushButton>
@@ -5,10 +6,13 @@
 #include <QApplication>
 #include "main_window.h"
 #include "data_table.h"
+#include "json_converter.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
 	setWindowTitle("IIA");
+
+	JsonConverter *converter = new JsonConverter();
 
 	QWidget *centralWidget = new QWidget(this);
 
@@ -17,20 +21,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	QPushButton *loadFromClipboardBtn = new QPushButton("Clipboard");
 	QPushButton *loadFromFileBtn = new QPushButton("File");
-	QPushButton *viewBackBtn = new QPushButton("<");
-	QPushButton *setAsRootBtn = new QPushButton("R");
 
 	loadFromClipboardBtn->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 	loadFromFileBtn->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-	viewBackBtn->setEnabled(false);
-	viewBackBtn->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-	setAsRootBtn->setEnabled(false);
-	setAsRootBtn->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
 	topButtonLayout->addWidget(loadFromClipboardBtn);
 	topButtonLayout->addWidget(loadFromFileBtn);
-	topButtonLayout->addWidget(viewBackBtn);
-	topButtonLayout->addWidget(setAsRootBtn);
 	topButtonLayout->setAlignment(Qt::AlignLeft);
 
 	DataTable *dataTable = new DataTable();
@@ -41,9 +37,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	centralWidget->setLayout(mainLayout);
 
 	// connect signals
-	QObject::connect(loadFromClipboardBtn, &QPushButton::pressed, []() {
+	QObject::connect(loadFromClipboardBtn, &QPushButton::pressed, [converter]() {
 		QClipboard *clipboard = QApplication::clipboard();
 		QString value = clipboard->text();
+
+		converter->loadStdString(value.toStdString());
+	});
+
+	QObject::connect(converter, &JsonConverter::loaded, [dataTable](std::vector<KeyValue *> data) {
+		dataTable->reloadData(data);
 	});
 
 	setCentralWidget(centralWidget);

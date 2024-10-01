@@ -15,9 +15,7 @@ DataTable::DataTable(QWidget *parent) : QWidget(parent)
 	QHBoxLayout *filterLayout = new QHBoxLayout();
 
 	// QTableView model & filter
-	QStandardItemModel *model = new QStandardItemModel();
-
-	model->setColumnCount(2);
+	model.setColumnCount(2);
 
 	QLineEdit *propFilter = new QLineEdit();
 	QLineEdit *valueFilter = new QLineEdit();
@@ -29,7 +27,7 @@ DataTable::DataTable(QWidget *parent) : QWidget(parent)
 	filterLayout->addWidget(valueFilter);
 
 	QSortFilterProxyModel *propFilterModel = new QSortFilterProxyModel();
-	propFilterModel->setSourceModel(model);
+	propFilterModel->setSourceModel(&model);
 	propFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
 	QSortFilterProxyModel *valueFilterModel = new QSortFilterProxyModel();
@@ -39,12 +37,12 @@ DataTable::DataTable(QWidget *parent) : QWidget(parent)
 	QObject::connect(propFilter, &QLineEdit::textChanged, [propFilterModel](const QString &text) {
 		propFilterModel->setFilterKeyColumn(0);
 		propFilterModel->setFilterFixedString(text);
-		});
+	});
 
 	QObject::connect(valueFilter, &QLineEdit::textChanged, [valueFilterModel](const QString &text) {
 		valueFilterModel->setFilterKeyColumn(1);
 		valueFilterModel->setFilterFixedString(text);
-		});
+	});
 
 	QTableView *tableView = new QTableView();
 	tableView->setModel(valueFilterModel);
@@ -62,4 +60,20 @@ DataTable::DataTable(QWidget *parent) : QWidget(parent)
 
 DataTable::~DataTable()
 {
+}
+
+void DataTable::reloadData(std::vector<KeyValue *> data)
+{
+	this->model.clear();
+
+	for (int i = 0; i < data.size(); i++)
+	{
+		KeyValue *keyValue = data.at(i);
+		QString fieldName = QString::fromStdString(keyValue->key);
+		QString fieldValue = QString::fromStdString(keyValue->value);
+
+		this->model.appendRow({ new QStandardItem(fieldName), new QStandardItem(fieldValue) });
+
+		delete keyValue;
+	}
 }
