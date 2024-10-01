@@ -54,32 +54,21 @@ void JsonConverter::loadStdString(string rawJson)
 				string objPath = tail.key.size() == 0 ? key : tail.key + "." + key;
 
 				if (json_object_get_type(val) == json_type_object || json_object_get_type(val) == json_type_array)
-				{
 					objects.push_back(JsonElem(objPath, val));
-				}
 				else
-				{
 					keyValues.push_back(new KeyValue(objPath, val));
-				}
 			}
 		}
 		break;
 
 		case json_type_array:
-			for (int i = 0; i < json_object_array_length(tail.value); i++)
+			for (int i = json_object_array_length(tail.value) - 1; i > -1 ; i--)
 			{
 				string curPath = "[" + to_string(i) + "]";
 				string objPath = tail.key.size() == 0 ? curPath : tail.key + curPath;
 				json_object *val = json_object_array_get_idx(tail.value, (size_t)i);
 
-				if (json_object_get_type(val) == json_type_object || json_object_get_type(val) == json_type_array)
-				{
-					objects.push_back(JsonElem(objPath, val));
-				}
-				else
-				{
-					keyValues.push_back(new KeyValue(objPath, val));
-				}
+				objects.push_back(JsonElem(objPath, val));
 			}
 			break;
 
