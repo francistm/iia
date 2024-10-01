@@ -12,21 +12,7 @@
 DataTable::DataTable(QWidget *parent) : QWidget(parent)
 {
 	QVBoxLayout *widgetLayout = new QVBoxLayout();
-	QHBoxLayout *actionButtonsLayout = new QHBoxLayout();
 	QHBoxLayout *filterLayout = new QHBoxLayout();
-
-	QPushButton *viewBackBtn = new QPushButton("<");
-	QPushButton *setAsRootBtn = new QPushButton("R");
-
-	viewBackBtn->setEnabled(false);
-	viewBackBtn->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-
-	setAsRootBtn->setEnabled(false);
-	setAsRootBtn->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-
-	actionButtonsLayout->addWidget(viewBackBtn);
-	actionButtonsLayout->addWidget(setAsRootBtn);
-	actionButtonsLayout->setAlignment(Qt::AlignLeft);
 
 	// QTableView model & filter
 	QStandardItemModel *model = new QStandardItemModel();
@@ -67,7 +53,6 @@ DataTable::DataTable(QWidget *parent) : QWidget(parent)
 	tableView->horizontalHeader()->setVisible(false);
 	tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-	widgetLayout->addLayout(actionButtonsLayout);
 	widgetLayout->addLayout(filterLayout);
 	widgetLayout->addWidget(tableView);
 
