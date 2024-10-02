@@ -1,4 +1,4 @@
-set(EXEC_SOURCES "main.cpp" "main_window.cpp" "data_table.cpp" "json_converter.cpp")
+set(EXEC_SOURCES "main.cpp" "main_window.cpp" "data_table.cpp" "json_convert.cpp")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)

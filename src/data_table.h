@@ -5,7 +5,7 @@
 #include <QLineEdit>
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
-#include "json_converter.h"
+#include "json_convert.h"
 
 using namespace std;
 
@@ -31,6 +31,6 @@ public:
 	explicit DataTable(QWidget *parent = 0);
 	~DataTable();
 
-	void reloadData(vector<KeyValue *> data);
+	void reloadData(vector<JsonConvert::KeyValue *> data);
 	void setFilterMatchMode(FilterMatchMode mode);
 };

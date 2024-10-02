@@ -33,9 +33,12 @@ DataTable::DataTable(QWidget *parent) : QWidget(parent)
 	QObject::connect(&propFilter, &QLineEdit::textChanged, [&](const QString &text) {
 		propFilterModel.setFilterKeyColumn(0);
 
-		if (filterMatchMode == FilterMatchMode::STD) {
+		if (filterMatchMode == FilterMatchMode::STD)
+		{
 			propFilterModel.setFilterFixedString(text);
-		} else {
+		}
+		else
+		{
 			QRegularExpression re(text);
 			if (re.isValid()) propFilterModel.setFilterRegularExpression(re);
 		}
@@ -44,9 +47,12 @@ DataTable::DataTable(QWidget *parent) : QWidget(parent)
 	QObject::connect(&valueFilter, &QLineEdit::textChanged, [&](const QString &text) {
 		valueFilterModel.setFilterKeyColumn(1);
 
-		if (filterMatchMode == FilterMatchMode::STD) {
+		if (filterMatchMode == FilterMatchMode::STD)
+		{
 			valueFilterModel.setFilterFixedString(text);
-		} else {
+		}
+		else
+		{
 			QRegularExpression re(text);
 			if (re.isValid()) valueFilterModel.setFilterRegularExpression(re);
 		}
@@ -70,13 +76,13 @@ DataTable::~DataTable()
 {
 }
 
-void DataTable::reloadData(std::vector<KeyValue *> data)
+void DataTable::reloadData(std::vector<JsonConvert::KeyValue *> data)
 {
 	this->model.clear();
 
 	for (int i = 0; i < data.size(); i++)
 	{
-		KeyValue *keyValue = data.at(i);
+		JsonConvert::KeyValue *keyValue = data.at(i);
 		QString fieldName = QString::fromStdString(keyValue->key);
 		QString fieldValue = QString::fromStdString(keyValue->value);
 
@@ -91,10 +97,13 @@ void DataTable::setFilterMatchMode(FilterMatchMode mode)
 	QString field = propFilter.text();
 	QString value = valueFilter.text();
 
-	if (mode == FilterMatchMode::STD) {
+	if (mode == FilterMatchMode::STD)
+	{
 		propFilterModel.setFilterFixedString(field);
 		valueFilterModel.setFilterFixedString(value);
-	} else {
+	}
+	else
+	{
 		QRegularExpression fieldRe(field);
 		QRegularExpression valueRe(value);
 

@@ -6,13 +6,11 @@
 #include <QApplication>
 #include "main_window.h"
 #include "data_table.h"
-#include "json_converter.h"
+#include "json_convert.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
 	setWindowTitle("IIA");
-
-	JsonConverter *converter = new JsonConverter();
 
 	QWidget *centralWidget = new QWidget(this);
 
@@ -41,19 +39,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	centralWidget->setLayout(mainLayout);
 
 	// connect signals
-	QObject::connect(loadFromClipboardBtn, &QPushButton::pressed, [converter]() {
-		QClipboard *clipboard = QApplication::clipboard();
-		QString value = clipboard->text();
+	QObject::connect(loadFromClipboardBtn, &QPushButton::pressed, [dataTable]() {
+		QClipboard *clipboard;
+		std::vector<JsonConvert::KeyValue *> keyValues;
 
-		converter->loadStdString(value.toStdString());
+		clipboard = QApplication::clipboard();
+		keyValues = JsonConvert::convertStdStringToKeyValues(clipboard->text().toStdString());
+
+		dataTable->reloadData(keyValues);
 	});
 
 	QObject::connect(useRegexpBtn, &QPushButton::clicked, [dataTable](bool selected) {
 		dataTable->setFilterMatchMode(selected ? FilterMatchMode::RE : FilterMatchMode::STD);
-	});
-
-	QObject::connect(converter, &JsonConverter::loaded, [dataTable](std::vector<KeyValue *> data) {
-		dataTable->reloadData(data);
 	});
 
 	setCentralWidget(centralWidget);
