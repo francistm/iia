@@ -16,12 +16,12 @@ namespace JsonConvert {
 		JsonElem(string k, json_object *v) : key(k), value(v) {};
 	};
 
-	vector<KeyValue *> convertStdStringToKeyValues(string rawJson)
+	vector<shared_ptr<KeyValue>> convertStdStringToKeyValues(string rawJson)
 	{
 		json_type root_type;
 		json_object *root_obj;
-		deque<JsonElem> objects = {};
-		vector<KeyValue *> keyValues = {};
+		deque<JsonElem> objects;
+		vector<shared_ptr<KeyValue>> keyValues = {};
 
 		root_obj = json_tokener_parse(rawJson.c_str());
 
@@ -49,7 +49,7 @@ namespace JsonConvert {
 					if (json_object_get_type(val) == json_type_object || json_object_get_type(val) == json_type_array)
 						objects.push_back(JsonElem(objPath, val));
 					else
-						keyValues.push_back(new KeyValue(objPath, val));
+						keyValues.push_back(make_shared<KeyValue>(KeyValue(objPath, val)));
 				}
 			}
 			break;
@@ -66,7 +66,7 @@ namespace JsonConvert {
 				break;
 
 			default:
-				keyValues.push_back(new KeyValue(tail.key, tail.value));
+				keyValues.push_back(make_shared<KeyValue>(KeyValue(tail.key, tail.value)));
 			}
 		}
 

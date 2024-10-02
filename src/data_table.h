@@ -31,6 +31,6 @@ public:
 	explicit DataTable(QWidget *parent = 0);
 	~DataTable();
 
-	void reloadData(vector<JsonConvert::KeyValue *> data);
+	void reloadData(vector<shared_ptr<JsonConvert::KeyValue>> data);
 	void setFilterMatchMode(FilterMatchMode mode);
 };

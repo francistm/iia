@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	// connect signals
 	QObject::connect(loadFromClipboardBtn, &QPushButton::pressed, [dataTable]() {
 		QClipboard *clipboard;
-		std::vector<JsonConvert::KeyValue *> keyValues;
+		std::vector<std::shared_ptr<JsonConvert::KeyValue>> keyValues;
 
 		clipboard = QApplication::clipboard();
 		keyValues = JsonConvert::convertStdStringToKeyValues(clipboard->text().toStdString());

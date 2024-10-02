@@ -76,19 +76,17 @@ DataTable::~DataTable()
 {
 }
 
-void DataTable::reloadData(std::vector<JsonConvert::KeyValue *> data)
+void DataTable::reloadData(std::vector<std::shared_ptr<JsonConvert::KeyValue>> data)
 {
 	this->model.clear();
 
 	for (int i = 0; i < data.size(); i++)
 	{
-		JsonConvert::KeyValue *keyValue = data.at(i);
+		JsonConvert::KeyValue *keyValue = data.at(i).get();
 		QString fieldName = QString::fromStdString(keyValue->key);
 		QString fieldValue = QString::fromStdString(keyValue->value);
 
 		this->model.appendRow({ new QStandardItem(fieldName), new QStandardItem(fieldValue) });
-
-		delete keyValue;
 	}
 }
 

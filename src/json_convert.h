@@ -46,5 +46,5 @@ namespace JsonConvert
 		}
 	};
 
-	std::vector<KeyValue *> convertStdStringToKeyValues(std::string rawJson);
+	std::vector<std::shared_ptr<KeyValue>> convertStdStringToKeyValues(std::string rawJson);
 }
