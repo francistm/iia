@@ -3,6 +3,9 @@
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QClipboard>
+#include <QFileDialog>
+#include <QFile>
+#include <QTextStream>
 #include <QApplication>
 #include "main_window.h"
 #include "data_table.h"
@@ -38,7 +41,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	centralWidget->setLayout(mainLayout);
 
-	// connect signals
+	setCentralWidget(centralWidget);
+	resize(800, 600);
+
 	QObject::connect(loadFromClipboardBtn, &QPushButton::pressed, [dataTable]() {
 		QClipboard *clipboard;
 		std::vector<std::shared_ptr<JsonConvert::KeyValue>> keyValues;
@@ -49,12 +54,35 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		dataTable->reloadData(keyValues);
 	});
 
+	QObject::connect(loadFromFileBtn, &QPushButton::pressed, [this, dataTable]() {
+		QFile *file;
+		QTextStream *readStream;
+		QString filePath = QFileDialog::getOpenFileName(this, "Select File", "", "All files (*)");
+
+		QString data;
+		std::vector<std::shared_ptr<JsonConvert::KeyValue>> keyValues;
+
+		if (filePath.isEmpty()) return;
+
+		file = new QFile(filePath);
+
+		if (file->open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			readStream = new QTextStream(file);
+			data = readStream->readAll();
+			file->close();
+		}
+
+		if (!data.isEmpty())
+		{
+			keyValues = JsonConvert::convertStdStringToKeyValues(data.toStdString());
+			dataTable->reloadData(keyValues);
+		}
+	});
+
 	QObject::connect(useRegexpBtn, &QPushButton::clicked, [dataTable](bool selected) {
 		dataTable->setFilterMatchMode(selected ? FilterMatchMode::RE : FilterMatchMode::STD);
 	});
-
-	setCentralWidget(centralWidget);
-	resize(800, 600);
 }
 
 MainWindow::~MainWindow()
