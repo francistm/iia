@@ -1,4 +1,4 @@
-#include <array>
+#include <vector>
 #include <deque>
 #include <string>
 #include <QObject>
@@ -71,6 +71,7 @@ namespace JsonConvert {
 		}
 
 		json_object_put(root_obj);
+		keyValues.shrink_to_fit();
 
 		return keyValues;
 	}
