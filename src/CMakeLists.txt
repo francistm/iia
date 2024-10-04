@@ -1,9 +1,5 @@
 set(EXEC_SOURCES "main.cpp" "main_window.cpp" "data_table.cpp" "json_convert.cpp")
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-
 if (WIN32)
     add_executable(iia WIN32 ${EXEC_SOURCES})
 elseif (APPLE)
