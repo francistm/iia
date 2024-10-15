@@ -1,6 +1,6 @@
 {
   "dependencies": [
-    "qt5",
+    "qt5-base",
     "json-c"
   ]
 }
