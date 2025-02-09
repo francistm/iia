@@ -2,10 +2,13 @@ set(EXEC_SOURCES "main.cpp" "main_window.cpp" "data_table.cpp" "json_convert.cpp
 
 if (WIN32)
     add_executable(iia WIN32 ${EXEC_SOURCES})
+    install(TARGETS iia RUNTIME DESTINATION .)
 elseif (APPLE)
     add_executable(iia MACOSX_BUNDLE ${EXEC_SOURCES})
     set_target_properties(iia PROPERTIES MACOSX_BUNDLE YES)
+    install(TARGETS iia BUNDLE DESTINATION .)
 endif()
+
 
 find_package(json-c CONFIG REQUIRED)
 target_link_libraries(iia PRIVATE json-c::json-c)
